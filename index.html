@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>浙江健康码</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            position: relative;
+            width: 100%;
+            height: 2480px;
+            background: url("codelast.jpg");
+            background-size: contain;
+            /* overflow: hidden; */
+        }
+
+        #app {
+            display: flex;
+            justify-content: space-evenly;
+            position: absolute;
+            left: 50%;
+            top: 433px;
+            transform: translate(-50%);
+            width: 790px;
+            height: 105.6px;
+            background-color: #fff;
+        }
+
+        #app div {
+            height: 105.6px;
+            line-height: 105.6px;
+            text-align: center;
+            font-size: 80px;
+            font-weight: bolder;
+            font-family: "Microsoft Yahei";
+        }
+
+        #app1 {
+            display: flex;
+            justify-content: space-evenly;
+            position: absolute;
+            left: 46%;
+            top: 1706px;
+            width: 460px;
+            height: 52.8px;
+            background-color: #fff;
+        }
+
+        #app1 div {
+            height: 52.8px;
+            line-height: 52.8px;
+            text-align: center;
+            font-size: 40px;
+            font-family: "Microsoft Yahei";
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="one">{{time | format1('MM月dd日')}}</div>
+        <div class="two">{{time | format('hh:mm:ss')}}</div>
+    </div>
+    <div id="app1">
+        <div class="three">{{time | format2('MM月dd日')}}</div>
+        <div class="four">19:37&nbsp;&nbsp;采样时间</div>
+    </div>
+    <script type="text/javascript" src="./vue.js"></script>
+    <script type="text/javascript">
+        // ↓↓↓↓↓↓↓↓↓↓定义了一个格式化日期的全局过滤器
+        Vue.filter('format', function (value, arg) {
+            function dateFormat(date, format) {
+                if (typeof date === "string") {
+                    var mts = date.match(/(\/Date\((\d+)\)\/)/);
+                    if (mts && mts.length >= 3) {
+                        date = parseInt(mts[2]);
+                    }
+                }
+                date = new Date(date);
+                if (!date || date.toUTCString() == "Invalid Date") {
+                    return "";
+                }
+                var map = {
+                    "M": date.getMonth() + 1, //月份 
+                    "d": date.getDate(), //日 
+                    "h": date.getHours(), //小时 
+                    "m": date.getMinutes(), //分 
+                    "s": date.getSeconds(), //秒 
+                    "q": Math.floor((date.getMonth() + 3) / 3), //季度 
+                    "S": date.getMilliseconds() //毫秒 
+                };
+
+                format = format.replace(/([yMdhmsqS])+/g, function (all, t) {
+                    var v = map[t];
+                    if (v !== undefined) {
+                        if (all.length > 1) {
+                            v = '0' + v;
+                            v = v.substr(v.length - 2);
+                        }
+                        return v;
+                    } else if (t === 'y') {
+                        return (date.getFullYear() + '').substr(4 - all.length);
+                    }
+                    return all;
+                });
+                return format;
+            }
+            return dateFormat(value, arg);
+        });
+        // ↑↑↑↑↑↑↑↑↑↑
+        // ↓↓↓↓↓↓↓↓↓↓这个全局过滤器不能自动补零
+        Vue.filter('format1', function (value, arg) {
+            function dateFormat(date, format) {
+                if (typeof date === "string") {
+                    var mts = date.match(/(\/Date\((\d+)\)\/)/);
+                    if (mts && mts.length >= 3) {
+                        date = parseInt(mts[2]);
+                    }
+                }
+                date = new Date(date);
+                if (!date || date.toUTCString() == "Invalid Date") {
+                    return "";
+                }
+                var map = {
+                    "M": date.getMonth() + 1, //月份 
+                    "d": date.getDate(), //日 
+                    "h": date.getHours(), //小时 
+                    "m": date.getMinutes(), //分 
+                    "s": date.getSeconds(), //秒 
+                    "q": Math.floor((date.getMonth() + 3) / 3), //季度 
+                    "S": date.getMilliseconds() //毫秒 
+                };
+
+                format = format.replace(/([yMdhmsqS])+/g, function (all, t) {
+                    var v = map[t];
+                    if (v !== undefined) {
+                        // if (all.length > 1) {
+                        //     v = '0' + v;
+                        //     v = v.substr(v.length - 2);
+                        // }
+                        return v;
+                    } else if (t === 'y') {
+                        return (date.getFullYear() + '').substr(4 - all.length);
+                    }
+                    return all;
+                });
+                return format;
+            }
+            return dateFormat(value, arg);
+        });
+        // ↑↑↑↑↑↑↑↑↑↑
+        // ↓↓↓↓↓↓↓↓↓↓这个全局过滤器不能自动补零，且返回的日期是昨天
+        Vue.filter('format2', function (value, arg) {
+            function dateFormat(date, format) {
+                if (typeof date === "string") {
+                    var mts = date.match(/(\/Date\((\d+)\)\/)/);
+                    if (mts && mts.length >= 3) {
+                        date = parseInt(mts[2]);
+                    }
+                }
+                date = new Date(date);
+                if (!date || date.toUTCString() == "Invalid Date") {
+                    return "";
+                }
+                var map = {
+                    "M": date.getMonth() + 1, //月份 
+                    "d": date.getDate()-1, //日 
+                    "h": date.getHours(), //小时 
+                    "m": date.getMinutes(), //分 
+                    "s": date.getSeconds(), //秒 
+                    "q": Math.floor((date.getMonth() + 3) / 3), //季度 
+                    "S": date.getMilliseconds() //毫秒 
+                };
+
+                format = format.replace(/([yMdhmsqS])+/g, function (all, t) {
+                    var v = map[t];
+                    if (v !== undefined) {
+                        // if (all.length > 1) {
+                        //     v = '0' + v;
+                        //     v = v.substr(v.length - 2);
+                        // }
+                        return v;
+                    } else if (t === 'y') {
+                        return (date.getFullYear() + '').substr(4 - all.length);
+                    }
+                    return all;
+                });
+                return format;
+            }
+            return dateFormat(value, arg);
+        })
+        // ↑↑↑↑↑↑↑↑↑↑
+        var vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    time: +new Date() // 返回的是 1648620910910 这种类型格式的毫秒数
+                }
+            },
+            created() {
+                this.getLiveTimer(); // 生命周期，钩子函数，为创建后的实例，挂载下面这个函数
+            },
+            methods: {
+                getLiveTimer() {
+                    setInterval(() => {
+                        this.time = +new Date(); // 重新赋值 data 里面的变量
+                    }, 1000);
+                },
+            },
+        });
+        var vm1 = new Vue({
+            el: '#app1',
+            data() {
+                return {
+                    time: +new Date() // 返回的是 1648620910910 这种类型格式的毫秒数
+                }
+            },
+            created() {
+                this.getLiveTimer(); // 生命周期，钩子函数，为创建后的实例，挂载下面这个函数
+            },
+            methods: {
+                getLiveTimer() {
+                    setInterval(() => {
+                        this.time = +new Date(); // 重新赋值 data 里面的变量
+                    }, 1000);
+                },
+            },
+        });
+    </script>
+</body>
+
+</html>
